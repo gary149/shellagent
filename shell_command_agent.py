@@ -62,21 +62,14 @@ class ShellCommandTool(Tool):
                 timeout=30  # Prevent infinite running
             )
             
-            # Format output for CodeAgent
+            # Format output
             output = []
-            output.append("Thoughts: Executing shell command and processing results")
-            output.append("Code:")
-            output.append("```python")
-            output.append("result = execute_shell_command(command=\"" + command + "\")")
-            output.append("final_answer(answer=result)")
-            output.append("```")
-            
-            # Add command output as a comment
             if result.stdout:
-                output.append(f"# Command output (stdout):\n# {result.stdout.strip().replace('\n', '\n# ')}")
+                output.append(result.stdout.strip())
             if result.stderr:
-                output.append(f"# Command output (stderr):\n# {result.stderr.strip().replace('\n', '\n# ')}")
-            output.append(f"# Exit code: {result.returncode}")
+                output.append(result.stderr.strip())
+            if result.returncode != 0:
+                output.append(f"Exit code: {result.returncode}")
             
             return "\n".join(output)
             
