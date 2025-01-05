@@ -104,6 +104,7 @@ def create_shell_agent(model_name: Optional[str] = "Qwen/Qwen2.5-72B-Instruct") 
         5. If unsure about a command's safety, ask for clarification
         
         {{tool_descriptions}}
+        {{managed_agents_descriptions}}
         {{authorized_imports}}"""
     )
     return agent
