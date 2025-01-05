@@ -1,6 +1,7 @@
 from smolagents import Tool, CodeAgent, HfApiModel
 from typing import Optional
 
+
 class ShellCommandTool(Tool):
     name = "execute_shell_command"
     description = """
@@ -16,18 +17,25 @@ class ShellCommandTool(Tool):
     - System info commands like uname, whoami
     - Directory navigation (cd, pwd)
     """
-    
+
     inputs = {
         "command": {
             "type": "string",
-            "description": "The shell command to execute. Must be safe and non-destructive."
+            "description": "The shell command to execute. Must be safe and non-destructive.",
         }
     }
     output_type = "string"
 
     DANGEROUS_COMMANDS = [
-        "rm -rf", "mkfs", "dd", "format", ">", 
-        "sudo", "chmod", "chown", "mv"
+        "rm -rf",
+        "mkfs",
+        "dd",
+        "format",
+        ">",
+        "sudo",
+        "chmod",
+        "chown",
+        "mv",
     ]
 
     def _validate_command(self, command: str) -> None:
@@ -45,13 +53,13 @@ class ShellCommandTool(Tool):
         # Import here as required for Hub compatibility
         import subprocess
         import os
-        
+
         try:
             # Validate command first
             self._validate_command(command)
-            
+
             print(f"Executing command: {command}")
-            
+
             # Run command with safety measures
             result = subprocess.run(
                 command,
@@ -59,9 +67,9 @@ class ShellCommandTool(Tool):
                 capture_output=True,
                 text=True,
                 cwd=os.getcwd(),
-                timeout=30  # Prevent infinite running
+                timeout=30,  # Prevent infinite running
             )
-            
+
             # Format output
             output = []
             if result.stdout:
@@ -70,27 +78,30 @@ class ShellCommandTool(Tool):
                 output.append(result.stderr.strip())
             if result.returncode != 0:
                 output.append(f"Exit code: {result.returncode}")
-            
+
             return "\n".join(output)
-            
+
         except subprocess.TimeoutExpired:
             return "Error: Command timed out after 30 seconds"
         except Exception as e:
             return f"Error executing command: {str(e)}"
 
-def create_shell_agent(model_name: Optional[str] = "Qwen/Qwen2.5-72B-Instruct") -> CodeAgent:
+
+def create_shell_agent(
+    model_name: Optional[str] = "Qwen/Qwen2.5-72B-Instruct",
+) -> CodeAgent:
     """
     Creates an agent that can execute shell commands safely.
-    
+
     Args:
         model_name: The name of the HuggingFace model to use
-        
+
     Returns:
         A CodeAgent configured to run shell commands with safety measures
     """
     # Create tool instance
     shell_tool = ShellCommandTool()
-    
+
     # Create agent with enhanced prompt
     agent = CodeAgent(
         tools=[shell_tool],
@@ -116,19 +127,20 @@ def create_shell_agent(model_name: Optional[str] = "Qwen/Qwen2.5-72B-Instruct") 
         
         {{tool_descriptions}}
         {{managed_agents_descriptions}}
-        {{authorized_imports}}"""
+        {{authorized_imports}}""",
     )
     return agent
+
 
 if __name__ == "__main__":
     # Example usage
     agent = create_shell_agent()
-    
+
     # Run safe example commands
     print("Testing directory listing...")
     result = agent.run("Show me what files are in the current directory")
     print(result)
-    
+
     print("\nTesting system info...")
     result = agent.run("What operating system am I running?")
     print(result)
