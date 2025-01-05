@@ -62,15 +62,23 @@ class ShellCommandTool(Tool):
                 timeout=30  # Prevent infinite running
             )
             
-            # Format output
+            # Format output for CodeAgent
             output = []
-            if result.stdout:
-                output.append(f"STDOUT:\n{result.stdout.strip()}")
-            if result.stderr:
-                output.append(f"STDERR:\n{result.stderr.strip()}")
-            output.append(f"Exit code: {result.returncode}")
+            output.append("Thoughts: Executing shell command and processing results")
+            output.append("Code:")
+            output.append("```python")
+            output.append("result = execute_shell_command(command=\"" + command + "\")")
+            output.append("final_answer(answer=result)")
+            output.append("```")
             
-            return "\n\n".join(output)
+            # Add command output as a comment
+            if result.stdout:
+                output.append(f"# Command output (stdout):\n# {result.stdout.strip().replace('\n', '\n# ')}")
+            if result.stderr:
+                output.append(f"# Command output (stderr):\n# {result.stderr.strip().replace('\n', '\n# ')}")
+            output.append(f"# Exit code: {result.returncode}")
+            
+            return "\n".join(output)
             
         except subprocess.TimeoutExpired:
             return "Error: Command timed out after 30 seconds"

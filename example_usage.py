@@ -4,8 +4,10 @@ from shell_command_agent import create_shell_agent
 agent = create_shell_agent()
 
 # Example commands
-result = agent.run("Show me the disk usage in human readable format")
+print("Checking disk usage...")
+result = agent.run("I want to see the disk usage in human readable format. Please use the df -h command.")
 print(result)
 
-result = agent.run("Create a new directory called 'test' and list its contents")
+print("\nCreating and listing directory...")
+result = agent.run("First create a directory named 'test' using mkdir, then list its contents with ls")
 print(result)
