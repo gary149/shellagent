@@ -103,6 +103,16 @@ def create_shell_agent(model_name: Optional[str] = "Qwen/Qwen2.5-72B-Instruct") 
         3. Never use destructive commands like rm -rf, format, etc
         4. Avoid commands that modify system files or settings
         5. If unsure about a command's safety, ask for clarification
+
+        RESPONSE FORMAT:
+        You must always respond in this exact format:
+        Thoughts: Explain what you're going to do
+        Code:
+        ```python
+        # Execute the shell command
+        result = execute_shell_command(command="<your shell command here>")
+        final_answer(answer=result)
+        ```
         
         {{tool_descriptions}}
         {{managed_agents_descriptions}}
