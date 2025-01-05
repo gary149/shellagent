@@ -1,1 +1,2 @@
-smolagents
+smolagents>=0.0.1
+python-dotenv>=0.19.0
