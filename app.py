@@ -2,6 +2,10 @@ import argparse
 import os
 from shell_command_agent import create_shell_agent
 
+# Set default LM Studio API base if not already set
+if "LM_STUDIO_API_BASE" not in os.environ:
+    os.environ["LM_STUDIO_API_BASE"] = "http://localhost:1234/v1"
+
 
 def main():
     # Create argument parser
@@ -15,6 +19,13 @@ def main():
         type=str,
         default=os.getcwd(),
         help="The path where to run the command (default: current directory)",
+    )
+    parser.add_argument(
+        "--model",
+        "-m",
+        type=str,
+        required=True,
+        help="The LLM model to use (required). Example: lm_studio/qwen2.5-coder-14b-instruct",
     )
 
     # Parse arguments
@@ -31,9 +42,8 @@ def main():
 
     try:
         # Create and run agent
-        agent = create_shell_agent()
-        result = agent.run(args.prompt)
-        print(result)
+        agent = create_shell_agent(model_name=args.model)
+        agent.run(args.prompt)
     finally:
         # Always return to original directory
         os.chdir(original_dir)
